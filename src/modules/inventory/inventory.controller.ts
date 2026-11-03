@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import {
   Body,
   Controller,
@@ -13,6 +14,11 @@ import { InventoryService } from './inventory.service';
 import { CreateInventoryDto } from './dto/create-inventory.dto';
 import { CreateInventoryTransactionDto } from './dto/create-inventory-transaction.dto';
 import { SetMenuIngredientDto } from './dto/set-menu-ingredient.dto';
+=======
+import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { InventoryService } from './inventory.service';
+import { CreateInventoryDto } from './dto/create-inventory.dto';
+>>>>>>> f8f341eca9b95b1839b377352647cc4a585188bd
 import { UpdateInventoryDto } from './dto/update-inventory.dto';
 
 @Controller('inventory')
@@ -29,6 +35,7 @@ export class InventoryController {
     return this.inventoryService.findAll();
   }
 
+<<<<<<< HEAD
   @Get(':id/transactions')
   findTransactions(@Param('id', ParseUUIDPipe) id: string) {
     return this.inventoryService.findTransactions(id);
@@ -72,5 +79,20 @@ export class InventoryController {
   @Delete(':id')
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.inventoryService.remove(id);
+=======
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.inventoryService.findOne(+id);
+  }
+
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateInventoryDto: UpdateInventoryDto) {
+    return this.inventoryService.update(+id, updateInventoryDto);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.inventoryService.remove(+id);
+>>>>>>> f8f341eca9b95b1839b377352647cc4a585188bd
   }
 }

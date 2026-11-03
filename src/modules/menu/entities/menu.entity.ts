@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { decimalTransformer } from '../../../common/transformers';
 
@@ -20,3 +21,6 @@ export class Menu {
   @Column({ name: 'is_available', default: true })
   isAvailable: boolean;
 }
+=======
+export class Menu {}
+>>>>>>> f8f341eca9b95b1839b377352647cc4a585188bd

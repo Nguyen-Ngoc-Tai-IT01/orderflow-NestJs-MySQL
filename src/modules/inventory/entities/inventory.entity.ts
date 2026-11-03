@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import {
   Column,
   Check,
@@ -42,3 +43,6 @@ export class Inventory {
   @UpdateDateColumn()
   updatedAt: Date;
 }
+=======
+export class Inventory {}
+>>>>>>> f8f341eca9b95b1839b377352647cc4a585188bd

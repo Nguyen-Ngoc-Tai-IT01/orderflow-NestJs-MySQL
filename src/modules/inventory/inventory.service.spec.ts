@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { jest } from '@jest/globals';
 import { DataSource, Repository } from 'typeorm';
 import {
@@ -73,5 +74,23 @@ describe('InventoryService', () => {
       }),
     ).rejects.toThrow('Không đủ');
     expect(manager.save.mock.calls).toHaveLength(0);
+=======
+import { Test, TestingModule } from '@nestjs/testing';
+import { InventoryService } from './inventory.service';
+
+describe('InventoryService', () => {
+  let service: InventoryService;
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [InventoryService],
+    }).compile();
+
+    service = module.get<InventoryService>(InventoryService);
+  });
+
+  it('should be defined', () => {
+    expect(service).toBeDefined();
+>>>>>>> f8f341eca9b95b1839b377352647cc4a585188bd
   });
 });
