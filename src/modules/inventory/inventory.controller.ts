@@ -72,5 +72,21 @@ export class InventoryController {
   @Delete(':id')
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.inventoryService.remove(id);
+<<<<<<< HEAD
+=======
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.inventoryService.findOne(+id);
+  }
+
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateInventoryDto: UpdateInventoryDto) {
+    return this.inventoryService.update(+id, updateInventoryDto);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.inventoryService.remove(+id);
+>>>>>>> 53dcff77b7db803d484f5c9ea613d3194be196d6
   }
 }

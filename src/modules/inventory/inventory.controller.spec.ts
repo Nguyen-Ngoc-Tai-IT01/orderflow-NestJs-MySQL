@@ -21,6 +21,10 @@ describe('InventoryController', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [InventoryController],
       providers: [{ provide: InventoryService, useValue: inventoryService }],
+<<<<<<< HEAD
+=======
+      providers: [InventoryService],
+>>>>>>> 53dcff77b7db803d484f5c9ea613d3194be196d6
     }).compile();
 
     controller = module.get<InventoryController>(InventoryController);

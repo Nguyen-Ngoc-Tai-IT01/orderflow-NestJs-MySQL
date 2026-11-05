@@ -14,7 +14,7 @@ import { MenuItemIngredient } from '../../menu/entities/menu-item-ingredient.ent
 import { Order } from '../entities/order.entity';
 import { OrderItem } from '../entities/order-item.entity';
 import { OrderStatus } from '../entities/order.entity';
-import { assertCanTransition } from '../order-state-machine';
+import { assertCanTransition } from './order-state-machine';
 import { CreateOrderDto } from '../dto/create-order.dto';
 import { InventoryTxType } from '../../inventory/entities/inventory-transaction.entity';
 
