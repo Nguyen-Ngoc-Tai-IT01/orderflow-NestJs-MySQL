@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import {
   Column,
   Check,
@@ -61,6 +60,3 @@ export class Order {
   @UpdateDateColumn()
   updatedAt: Date;
 }
-=======
-export class Order {}
->>>>>>> f8f341eca9b95b1839b377352647cc4a585188bd

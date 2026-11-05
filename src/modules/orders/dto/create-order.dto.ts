@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { Type } from 'class-transformer';
 import {
   ArrayMinSize,
@@ -28,6 +27,3 @@ export class CreateOrderDto {
   @Type(() => CreateOrderItemDto)
   items: CreateOrderItemDto[];
 }
-=======
-export class CreateOrderDto {}
->>>>>>> f8f341eca9b95b1839b377352647cc4a585188bd
