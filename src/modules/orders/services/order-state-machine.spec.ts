@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 import { BadRequestException } from '@nestjs/common';
 import { assertCanTransition } from './order-state-machine';
-import { OrderStatus } from './entities/order.entity';
+import { OrderStatus } from '../entities/order.entity';
 import { describe, it } from 'node:test';
 import { expect } from '@jest/globals';
 
