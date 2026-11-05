@@ -1,7 +1,6 @@
-<<<<<<< HEAD
 import {
-  Column,
   Check,
+  Column,
   CreateDateColumn,
   Entity,
   Index,
@@ -22,45 +21,43 @@ export enum OrderStatus {
 }
 
 @Entity('orders')
-@Check('"totalAmount" >= 0')
+@Check('total_amount >= 0')
 export class Order {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column({ unique: true })
-  code: string;
+  code!: string;
 
   @Column({ name: 'table_number' })
-  tableNumber: string;
+  tableNumber!: string;
 
   @Column({ name: 'customer_name', nullable: true })
   customerName?: string;
 
   @Column({ type: 'enum', enum: OrderStatus, default: OrderStatus.PENDING })
   @Index()
-  status: OrderStatus;
+  status!: OrderStatus;
 
   @Column({
-    type: 'numeric',
+    name: 'total_amount',
+    type: 'decimal',
     precision: 12,
     scale: 2,
     default: 0,
     transformer: decimalTransformer,
   })
-  totalAmount: number;
+  totalAmount!: number;
 
   @Column({ nullable: true })
   note?: string;
 
   @OneToMany(() => OrderItem, (item) => item.order, { cascade: ['insert'] })
-  items: Relation<OrderItem[]>;
+  items!: Relation<OrderItem[]>;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 }
-=======
-export class Order {}
->>>>>>> f8f341eca9b95b1839b377352647cc4a585188bd

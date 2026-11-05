@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import {
   IsNumber,
   IsOptional,
@@ -10,11 +9,11 @@ import {
 export class CreateInventoryDto {
   @IsString()
   @MinLength(1)
-  name: string;
+  name!: string;
 
   @IsString()
   @MinLength(1)
-  unit: string;
+  unit!: string;
 
   @IsOptional()
   @IsNumber({ maxDecimalPlaces: 3 })
@@ -26,6 +25,3 @@ export class CreateInventoryDto {
   @Min(0)
   minQuantity?: number;
 }
-=======
-export class CreateInventoryDto {}
->>>>>>> f8f341eca9b95b1839b377352647cc4a585188bd

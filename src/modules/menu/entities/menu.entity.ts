@@ -1,26 +1,45 @@
-<<<<<<< HEAD
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { decimalTransformer } from '../../../common/transformers';
 
 @Entity('menu_items')
-export class Menu {
+export class MenuItem {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
-  @Column({ unique: true })
-  name: string;
+  @Column({ length: 150, unique: true })
+  name!: string;
 
   @Column({
-    type: 'numeric',
-    precision: 12,
+    type: 'decimal',
+    precision: 10,
     scale: 2,
     transformer: decimalTransformer,
   })
-  price: number;
+  price!: number;
+
+  @Column({ length: 50, default: 'Main' })
+  @Index()
+  category!: string;
+
+  @Column({ name: 'image_url', nullable: true })
+  imageUrl?: string;
 
   @Column({ name: 'is_available', default: true })
-  isAvailable: boolean;
+  @Index()
+  isAvailable!: boolean;
+
+  @CreateDateColumn()
+  createdAt!: Date;
+
+  @UpdateDateColumn()
+  updatedAt!: Date;
 }
-=======
-export class Menu {}
->>>>>>> f8f341eca9b95b1839b377352647cc4a585188bd
+
+export { MenuItem as Menu };

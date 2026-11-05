@@ -13,28 +13,28 @@ import { Role } from '../../../common/enums/role.enum';
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column({ unique: true, length: 50 })
-  username: string;
+  username!: string;
 
   @Column()
-  password: string;
+  password!: string;
 
   @Column({ length: 100 })
-  fullName: string;
+  fullName!: string;
 
   @Column({ type: 'enum', enum: Role, default: Role.WAITER })
-  role: Role;
+  role!: Role;
 
   @Column({ default: true })
-  isActive: boolean;
+  isActive!: boolean;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 
   @BeforeInsert()
   async hashPasswordBeforeInsert() {

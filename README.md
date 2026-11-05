@@ -1,15 +1,38 @@
 
 # OrderFlow
 
-## PostgreSQL and Order/Inventory APIs
+## Database and configuration
 
-The application uses PostgreSQL. Set `DATABASE_URL` or configure `DB_HOST`,
-`DB_PORT`, `DB_USERNAME`, `DB_PASSWORD`, and `DB_NAME` before starting it.
-For local development, the defaults are `localhost:5432`, user/password
-`postgres`, and database `orderflow`. Schema synchronization is enabled outside
-production by default; set `DB_SYNCHRONIZE=false` to disable it. Production
-deployments should use migrations and provide database credentials through
-their environment.
+The application uses MySQL. Configure `DB_HOST`, `DB_PORT`, `DB_USERNAME`,
+`DB_PASSWORD`, and `DB_NAME` in the environment. Defaults are
+`localhost:3306`, `root`, an empty password, and `orderflow_db`.
+`JWT_SECRET` should also be configured with a private value. Schema
+synchronization is enabled outside production by default; set
+`DB_SYNCHRONIZE=false` to disable it. Production deployments should use
+migrations and provide credentials through their environment.
+
+## Master data and reports
+
+All menu, table, and report endpoints require a JWT bearer token.
+
+- `GET/POST /menu`, `GET/PATCH/DELETE /menu/:id` manage menu items. Listing
+  supports `search`, `category`, and `isAvailable` query parameters. Delete
+  archives the item by marking it unavailable so historical order items remain
+  reportable.
+- `POST /menu/:id/image` accepts multipart form data with an `image` field
+  (JPEG, PNG, WebP, or GIF; maximum 5 MB). Images are stored under
+  `uploads/menu` and served from the returned `imageUrl`.
+- `GET/POST /tables`, `GET/PATCH/DELETE /tables/:id` manage tables. Statuses
+  are `AVAILABLE`, `OCCUPIED`, and `RESERVED`.
+- `POST /tables/:id/reservation` saves customer and reservation details;
+  `DELETE /tables/:id/reservation` cancels a reservation.
+- `GET /reports/revenue?period=day|week&from=YYYY-MM-DD&to=YYYY-MM-DD`
+  returns revenue and served-order counts by day or ISO week.
+- `GET /reports/cancelled-orders` returns the number of cancelled orders in
+  the optional date range. `GET /reports/top-items` returns top-selling items
+  from served orders and accepts an optional `limit` (1-50).
+
+## Orders and inventory
 
 Orders support creation, paginated/searchable listing, lookup by UUID, and
 status transitions through `PATCH /orders/:id`. Inventory quantity changes

@@ -11,7 +11,7 @@ import { decimalTransformer } from '../../../common/transformers';
 import { Order } from './order.entity';
 
 @Entity('order_items')
-@Check('"unitPrice" >= 0 AND quantity > 0')
+@Check('unit_price >= 0 AND quantity > 0')
 export class OrderItem {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -30,7 +30,8 @@ export class OrderItem {
   name: string;
 
   @Column({
-    type: 'numeric',
+    name: 'unit_price',
+    type: 'decimal',
     precision: 12,
     scale: 2,
     transformer: decimalTransformer,

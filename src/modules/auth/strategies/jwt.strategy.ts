@@ -1,6 +1,13 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
+import { Role } from '../../../common/enums/role.enum';
+
+interface JwtPayload {
+  sub: string;
+  username: string;
+  role: Role;
+}
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -8,11 +15,11 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: 'orderflow_secret_key_2026', // Nên đưa vào file .env
+      secretOrKey: process.env.JWT_SECRET ?? 'orderflow_secret_key_2026',
     });
   }
 
-  async validate(payload: any) {
+  validate(payload: JwtPayload) {
     return {
       userId: payload.sub,
       username: payload.username,

@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import {
   IsNumber,
   IsOptional,
@@ -23,9 +22,3 @@ export class UpdateInventoryDto {
   @Min(0)
   minQuantity?: number;
 }
-=======
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateInventoryDto } from './create-inventory.dto';
-
-export class UpdateInventoryDto extends PartialType(CreateInventoryDto) {}
->>>>>>> f8f341eca9b95b1839b377352647cc4a585188bd

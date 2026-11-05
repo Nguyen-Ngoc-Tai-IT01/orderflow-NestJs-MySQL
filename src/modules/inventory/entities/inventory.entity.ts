@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import {
   Column,
   Check,
@@ -13,13 +12,13 @@ import { decimalTransformer } from '../../../common/transformers';
 @Check('min_quantity >= 0')
 export class Inventory {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column({ unique: true })
-  name: string;
+  name!: string;
 
   @Column()
-  unit: string;
+  unit!: string;
 
   @Column({
     type: 'numeric',
@@ -28,7 +27,7 @@ export class Inventory {
     default: 0,
     transformer: decimalTransformer,
   })
-  quantity: number;
+  quantity!: number;
 
   @Column({
     name: 'min_quantity',
@@ -38,11 +37,8 @@ export class Inventory {
     default: 0,
     transformer: decimalTransformer,
   })
-  minQuantity: number;
+  minQuantity!: number;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 }
-=======
-export class Inventory {}
->>>>>>> f8f341eca9b95b1839b377352647cc4a585188bd

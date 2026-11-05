@@ -21,14 +21,14 @@ export enum InventoryTxType {
 @Check('quantity > 0')
 export class InventoryTransaction {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @ManyToOne(() => Inventory, { onDelete: 'RESTRICT', nullable: false })
   @JoinColumn({ name: 'inventory_id' })
-  inventory: Inventory;
+  inventory!: Inventory;
 
   @Column({ type: 'enum', enum: InventoryTxType })
-  type: InventoryTxType;
+  type!: InventoryTxType;
 
   @Column({
     type: 'numeric',
@@ -36,7 +36,7 @@ export class InventoryTransaction {
     scale: 3,
     transformer: decimalTransformer,
   })
-  quantity: number;
+  quantity!: number;
 
   @Column({ name: 'order_id', nullable: true })
   orderId?: string;
@@ -45,5 +45,5 @@ export class InventoryTransaction {
   note?: string;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 }

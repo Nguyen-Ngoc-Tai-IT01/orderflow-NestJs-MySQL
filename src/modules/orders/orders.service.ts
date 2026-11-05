@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-export { OrdersService } from './services/createOrderDtoService';
-=======
 import { Injectable } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
@@ -27,4 +24,3 @@ export class OrdersService {
     return `This action removes a #${id} order`;
   }
 }
->>>>>>> f8f341eca9b95b1839b377352647cc4a585188bd
