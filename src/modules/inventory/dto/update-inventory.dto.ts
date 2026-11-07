@@ -1,4 +1,24 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateInventoryDto } from './create-inventory.dto';
+import {
+  IsNumber,
+  IsOptional,
+  IsString,
+  Min,
+  MinLength,
+} from 'class-validator';
 
-export class UpdateInventoryDto extends PartialType(CreateInventoryDto) {}
+export class UpdateInventoryDto {
+  @IsOptional()
+  @IsString()
+  @MinLength(1)
+  name?: string;
+
+  @IsOptional()
+  @IsString()
+  @MinLength(1)
+  unit?: string;
+
+  @IsOptional()
+  @IsNumber({ maxDecimalPlaces: 3 })
+  @Min(0)
+  minQuantity?: number;
+}
