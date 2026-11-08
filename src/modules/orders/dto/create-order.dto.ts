@@ -7,22 +7,45 @@ import {
   IsOptional,
   IsString,
   IsUUID,
+  MaxLength,
   Min,
   ValidateNested,
 } from 'class-validator';
 
 export class CreateOrderItemDto {
-  @IsUUID() menuItemId!: string;
-  @IsInt() @Min(1) quantity!: number;
-  @IsOptional() @IsString() note?: string;
+  @IsUUID('4')
+  menuItemId!: string;
+
+  @IsInt()
+  @Min(1)
+  quantity!: number;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(255)
+  note?: string;
 }
 
 export class CreateOrderDto {
-  @IsString() @IsNotEmpty() tableNumber!: string;
-  @IsOptional() @IsString() customerName?: string;
-  @IsOptional() @IsString() note?: string;
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(50)
+  tableNumber!: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(255)
+  customerName?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(255)
+  note?: string;
+
   @IsArray()
-  @ArrayMinSize(1)
+  @ArrayMinSize(1, {
+    message: 'Đơn hàng phải có ít nhất một món',
+  })
   @ValidateNested({ each: true })
   @Type(() => CreateOrderItemDto)
   items!: CreateOrderItemDto[];

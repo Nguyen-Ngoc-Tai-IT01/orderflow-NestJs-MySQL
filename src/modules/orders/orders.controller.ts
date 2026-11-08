@@ -1,44 +1,56 @@
 import {
+  Body,
   Controller,
   Get,
-  Post,
-  Body,
-  Patch,
   Param,
-  Delete,
-  Query
+  ParseUUIDPipe,
+  Patch,
+  Post,
+  Query,
 } from '@nestjs/common';
+
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { UpdateOrderDto } from './dto/update-order.dto';
-import { QueryOrderDto } from './dto/query-order.dto'; // DTO chứa phân trang, filter
+import { QueryOrderDto } from './dto/query-order.dto';
 
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
-  // API Tạo đơn hàng mới
+  // POST /orders
+  // Tạo đơn hàng mới
   @Post()
   create(@Body() createOrderDto: CreateOrderDto) {
     return this.ordersService.create(createOrderDto);
   }
 
-  // API Lấy danh sách đơn hàng (hỗ trợ phân trang, search, filter)
+  // GET /orders
+  // Lấy danh sách, tìm kiếm, lọc và phân trang
   @Get()
   findAll(@Query() queryDto: QueryOrderDto) {
     return this.ordersService.findAll(queryDto);
   }
 
-  // API Lấy chi tiết 1 đơn hàng
+  // GET /orders/:id
+  // Lấy chi tiết đơn hàng
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(
+    @Param('id', new ParseUUIDPipe({ version: '4' }))
+    id: string,
+  ) {
     return this.ordersService.findOne(id);
   }
 
-  // API Cập nhật trạng thái đơn hàng (State Machine)
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
-    return this.ordersService.update(id, updateOrderDto);
+  // PATCH /orders/:id/status
+  // Cập nhật trạng thái đơn hàng
+  @Patch(':id/status')
+  updateStatus(
+    @Param('id', new ParseUUIDPipe({ version: '4' }))
+    id: string,
+
+    @Body() updateOrderDto: UpdateOrderDto,
+  ) {
+    return this.ordersService.updateStatus(id, updateOrderDto.status);
   }
 }

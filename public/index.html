@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -16,8 +15,9 @@
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
-    <!-- CSS chính -->
+    <!-- CSS chính + CSS bổ sung cho Order Cards / Modal / Toast -->
     <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/css/orders-extra.css">
 </head>
 
 <body>
@@ -49,57 +49,57 @@
                 <span>Dashboard</span>
             </a>
 
-            <a href="#" class="nav-item">
+            <a href="/#orderSection" class="nav-item">
                 <i class="bi bi-receipt"></i>
                 <span>Orders</span>
                 <span class="nav-badge" id="sidebarOrderCount">0</span>
             </a>
 
-            <a href="#" class="nav-item">
+            <a href="/tables.html" class="nav-item">
                 <i class="bi bi-grid"></i>
                 <span>Tables</span>
             </a>
 
-            <a href="#" class="nav-item">
+            <a href="/menu.html" class="nav-item">
                 <i class="bi bi-cup-hot"></i>
                 <span>Menu</span>
             </a>
 
-            <a href="#" class="nav-item">
+            <a href="/inventory.html" class="nav-item">
                 <i class="bi bi-box-seam"></i>
                 <span>Inventory</span>
             </a>
 
-            <a href="#" class="nav-item">
+            <a href="/reservations.html" class="nav-item">
                 <i class="bi bi-calendar-check"></i>
                 <span>Reservations</span>
             </a>
 
-            <a href="#" class="nav-item">
+            <a href="/customers.html" class="nav-item">
                 <i class="bi bi-people"></i>
                 <span>Customers</span>
             </a>
 
-            <a href="#" class="nav-item">
+            <a href="/staff.html" class="nav-item">
                 <i class="bi bi-person-badge"></i>
                 <span>Staff</span>
             </a>
 
             <p class="nav-heading nav-heading-spaced">MANAGEMENT</p>
 
-            <a href="#" class="nav-item">
+            <a href="/reports.html" class="nav-item">
                 <i class="bi bi-bar-chart-line"></i>
                 <span>Reports</span>
             </a>
 
-            <a href="#" class="nav-item">
+            <a href="/settings.html" class="nav-item">
                 <i class="bi bi-gear"></i>
                 <span>Settings</span>
             </a>
 
         </nav>
 
-        <!-- Hỗ trợ -->
+        <!-- Hỗ trợ + tài khoản -->
         <div class="sidebar-bottom">
 
             <div class="support-card">
@@ -114,24 +114,18 @@
                     Hãy liên hệ với chúng tôi.
                 </p>
 
-                <button type="button" class="support-button">
+                <button type="button" class="support-button" id="supportButton">
                     Contact Support
                 </button>
             </div>
 
-            <!-- Tài khoản -->
             <div class="profile">
-                <div class="profile-avatar">T</div>
+                <div class="profile-avatar">A</div>
 
                 <div class="profile-info">
                     <strong>Administrator</strong>
                     <span>Dashboard Manager</span>
                 </div>
-
-                <button type="button" class="profile-more"
-                        aria-label="Tùy chọn tài khoản">
-                    <i class="bi bi-three-dots"></i>
-                </button>
             </div>
 
         </div>
@@ -159,16 +153,18 @@
                     <input
                         type="search"
                         id="searchOrder"
-                        placeholder="Search orders, customers..."
+                        placeholder="Tìm mã đơn, số bàn, khách hàng..."
                         autocomplete="off"
                     >
                 </div>
 
-                <!-- Thông báo -->
+                <!-- Thông báo: bấm để xem đơn đang chờ -->
                 <button type="button" class="header-icon"
-                        aria-label="Thông báo">
+                        id="notificationButton"
+                        title="Xem đơn đang chờ xác nhận"
+                        aria-label="Đơn đang chờ xác nhận">
                     <i class="bi bi-bell"></i>
-                    <span class="notification-dot"></span>
+                    <span class="notification-dot" id="notificationDot" hidden></span>
                 </button>
 
                 <!-- Ngày -->
@@ -200,7 +196,6 @@
                     <p>Tổng số đơn hàng</p>
                 </article>
 
-
                 <article class="stat-card">
                     <div class="stat-card-header">
                         <span>Pending Orders</span>
@@ -213,7 +208,6 @@
                     <p>Đơn hàng đang chờ</p>
                 </article>
 
-
                 <article class="stat-card">
                     <div class="stat-card-header">
                         <span>Preparing Orders</span>
@@ -225,7 +219,6 @@
                     <h2 id="preparingOrders">0</h2>
                     <p>Đơn hàng đang chế biến</p>
                 </article>
-
 
                 <article class="stat-card">
                     <div class="stat-card-header">
@@ -243,7 +236,7 @@
 
 
             <!-- ================= ORDER MANAGEMENT ================= -->
-            <section class="orders-section">
+            <section class="orders-section" id="orderSection">
 
                 <!-- Tiêu đề danh sách -->
                 <div class="section-header">
@@ -267,39 +260,28 @@
 
                     <div class="order-tabs" id="orderTabs">
 
-                        <button type="button"
-                                class="tab-button active"
-                                data-status="ALL">
-                            All
-                            <span id="countAll">0</span>
+                        <button type="button" class="tab-button active" data-status="ALL">
+                            All <span id="countAll">0</span>
                         </button>
 
-                        <button type="button"
-                                class="tab-button"
-                                data-status="PENDING">
-                            Pending
-                            <span id="countPending">0</span>
+                        <button type="button" class="tab-button" data-status="PENDING">
+                            Pending <span id="countPending">0</span>
                         </button>
 
-                        <button type="button"
-                                class="tab-button"
-                                data-status="PREPARING">
-                            Preparing
-                            <span id="countPreparing">0</span>
+                        <button type="button" class="tab-button" data-status="PREPARING">
+                            Preparing <span id="countPreparing">0</span>
                         </button>
 
-                        <button type="button"
-                                class="tab-button"
-                                data-status="READY">
-                            Ready
-                            <span id="countReady">0</span>
+                        <button type="button" class="tab-button" data-status="READY">
+                            Ready <span id="countReady">0</span>
                         </button>
 
-                        <button type="button"
-                                class="tab-button"
-                                data-status="SERVED">
-                            Served
-                            <span id="countServed">0</span>
+                        <button type="button" class="tab-button" data-status="SERVED">
+                            Served <span id="countServed">0</span>
+                        </button>
+
+                        <button type="button" class="tab-button" data-status="CANCELLED">
+                            Cancelled <span id="countCancelled">0</span>
                         </button>
 
                     </div>
@@ -320,15 +302,6 @@
                 </div>
 
 
-                <!-- Thông báo -->
-                <div id="orderMessage"
-                     class="order-message"
-                     role="status"
-                     aria-live="polite"
-                     hidden>
-                </div>
-
-
                 <!-- Loading -->
                 <div id="orderLoading" class="loading-state" hidden>
                     <div class="loading-spinner"></div>
@@ -336,47 +309,27 @@
                 </div>
 
 
-                <!-- Danh sách Order Cards -->
-                <div class="order-grid" id="orderGrid">
-
-                    <div class="empty-state">
-                        <div class="empty-icon">
-                            <i class="bi bi-receipt"></i>
-                        </div>
-
-                        <h3>Chưa có đơn hàng</h3>
-
-                        <p>
-                            Đơn hàng sẽ được hiển thị tại đây
-                            khi có dữ liệu từ hệ thống.
-                        </p>
-                    </div>
-
-                </div>
+                <!-- Danh sách Order Cards (render bằng dashboard.js) -->
+                <div class="order-grid" id="orderGrid"></div>
 
 
                 <!-- Phân trang -->
                 <div class="pagination">
 
-                    <div class="pagination-info"
-                         id="paginationInfo">
-                        Đang hiển thị 0 đơn hàng
+                    <div class="pagination-info" id="paginationInfo">
+                        Đang tải...
                     </div>
 
                     <div class="pagination-controls">
 
-                        <button type="button"
-                                id="prevPage"
-                                disabled
+                        <button type="button" id="prevPage" disabled
                                 aria-label="Trang trước">
                             <i class="bi bi-chevron-left"></i>
                         </button>
 
                         <span id="currentPage">1</span>
 
-                        <button type="button"
-                                id="nextPage"
-                                disabled
+                        <button type="button" id="nextPage" disabled
                                 aria-label="Trang sau">
                             <i class="bi bi-chevron-right"></i>
                         </button>
@@ -400,8 +353,8 @@
 
 </div>
 
-
-<!-- JavaScript Dashboard -->
+<!-- Thứ tự quan trọng: common.js phải nạp trước dashboard.js -->
+<script src="/js/common.js"></script>
 <script src="/js/dashboard.js"></script>
 
 </body>
