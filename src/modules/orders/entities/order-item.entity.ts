@@ -16,7 +16,7 @@ export class OrderItem {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToOne(() => Order, (o) => o.items, {
+  @ManyToOne(() => Order, (order) => order.items, {
     onDelete: 'CASCADE',
     nullable: false,
   })
@@ -43,4 +43,8 @@ export class OrderItem {
 
   @Column({ nullable: true })
   note?: string;
+
+  // Lưu ảnh tại thời điểm tạo đơn
+  @Column({ name: 'image_url', nullable: true })
+  imageUrl?: string;
 }

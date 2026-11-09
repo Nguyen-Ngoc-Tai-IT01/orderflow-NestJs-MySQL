@@ -1,12 +1,7 @@
 /* =====================================================
-   ORDERFLOW - ORDER DASHBOARD
+   ORDERFLOW - BẢNG ĐIỀU KHIỂN ĐƠN HÀNG
    File: public/js/dashboard.js
    Phụ trách: Tuyến
-   Yêu cầu: nạp /js/common.js trước file này.
-   API sử dụng (module Orders của Vỹ):
-     GET   /orders?page&limit&status&search&sortBy&order
-     GET   /orders/:id
-     PATCH /orders/:id/status   { status }
    ===================================================== */
 (function () {
   'use strict';
@@ -14,14 +9,11 @@
   const { ORDER_STATUS, ORDER_STATUS_LABEL, normalizeStatus, api, fmt, ui } =
     window.OF;
 
-  /* =====================================================
-     CẤU HÌNH
-     ===================================================== */
   const API_ORDERS = '/orders';
-  const PAGE_LIMIT = 9; // lưới 3 cột x 3 hàng
-  const POLL_INTERVAL = 15000; // tự làm mới mỗi 15 giây
-  const MAX_ITEMS_ON_CARD = 4; // số món hiển thị trên mỗi thẻ
-  const LATE_MINUTES = 15; // đơn chờ/đang làm quá 15 phút -> cảnh báo
+  const PAGE_LIMIT = 9;
+  const POLL_INTERVAL = 15000;
+  const MAX_ITEMS_ON_CARD = 4;
+  const LATE_MINUTES = 15;
 
   const STATUS_KEYS = [
     ORDER_STATUS.PENDING,
@@ -31,8 +23,6 @@
     ORDER_STATUS.CANCELLED,
   ];
 
-  // Nút thao tác theo trạng thái hiện tại.
-  // Khớp State Machine của Vỹ: không cho nhảy cóc.
   const STATUS_ACTIONS = {
     [ORDER_STATUS.PENDING]: [
       {
@@ -88,49 +78,81 @@
     lowest: { sortBy: 'totalAmount', order: 'ASC' },
   };
 
-  /* =====================================================
-     TRẠNG THÁI ỨNG DỤNG
-     ===================================================== */
+  /* Ảnh cứng theo tên món */
+  const FOOD_IMAGE_MAP = {
+    'Phở bò': 'https://images.unsplash.com/photo-1591814468924-caf88d1232e1?w=200&h=200&fit=crop',
+    'Phở gà': 'https://images.unsplash.com/photo-1555126634-323283e090fa?w=200&h=200&fit=crop',
+    'Phở': 'https://images.unsplash.com/photo-1591814468924-caf88d1232e1?w=200&h=200&fit=crop',
+    'Bún bò Huế': 'https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?w=200&h=200&fit=crop',
+    'Bún bò': 'https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?w=200&h=200&fit=crop',
+    'Cơm tấm sườn': 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=200&h=200&fit=crop',
+    'Cơm tấm': 'https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=200&h=200&fit=crop',
+    'Cơm gà': 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=200&h=200&fit=crop',
+    'Bánh mì thịt': 'https://images.unsplash.com/photo-1600623471619-8b23ebbbae5a?w=200&h=200&fit=crop',
+    'Bánh mì': 'https://images.unsplash.com/photo-1600623471619-8b23ebbbae5a?w=200&h=200&fit=crop',
+    'Gỏi cuốn': 'https://images.unsplash.com/photo-1559847844-5315695dadae?w=200&h=200&fit=crop',
+    'Chả giò': 'https://images.unsplash.com/photo-1626804475297-41608ea346aa?w=200&h=200&fit=crop',
+    'Bún chả': 'https://images.unsplash.com/photo-1559314809-0d155014e29e?w=200&h=200&fit=crop',
+    'Mì xào': 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=200&h=200&fit=crop',
+    'Lẩu': 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=200&h=200&fit=crop',
+    'Trà đá': 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=200&h=200&fit=crop',
+    'Nước ngọt': 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=200&h=200&fit=crop',
+    'Cà phê sữa': 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=200&h=200&fit=crop',
+  };
+
+  const FALLBACK_IMAGE =
+    'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=200&h=200&fit=crop';
+
+  function getItemImage(item) {
+    if (item.image) return item.image;
+    if (item.imageUrl) return item.imageUrl;
+    if (item.photo) return item.photo;
+    if (item.menuItem?.image) return item.menuItem.image;
+    if (item.menuItem?.imageUrl) return item.menuItem.imageUrl;
+
+    const name = String(item.name || '').trim();
+    if (FOOD_IMAGE_MAP[name]) return FOOD_IMAGE_MAP[name];
+
+    const lower = name.toLowerCase();
+    for (const [key, url] of Object.entries(FOOD_IMAGE_MAP)) {
+      if (lower.includes(key.toLowerCase()) || key.toLowerCase().includes(lower)) {
+        return url;
+      }
+    }
+    return FALLBACK_IMAGE;
+  }
+
   const state = {
     page: 1,
     status: 'ALL',
     search: '',
     sortBy: 'createdAt',
     order: 'DESC',
-
     orders: [],
     total: 0,
     totalPages: 1,
     error: '',
-
     counts: { ALL: 0 },
-
-    loadSeq: 0, // chống ghi đè dữ liệu cũ khi gọi API chồng nhau
-    busyIds: new Set(), // đơn đang được cập nhật
+    loadSeq: 0,
+    busyIds: new Set(),
     searchTimer: null,
     pollTimer: null,
   };
 
   STATUS_KEYS.forEach((key) => (state.counts[key] = 0));
 
-  /* =====================================================
-     HÀM HỖ TRỢ
-     ===================================================== */
   const $ = (id) => document.getElementById(id);
 
   function setText(id, value) {
-    const element = $(id);
-    if (element) element.textContent = value;
+    const el = $(id);
+    if (el) el.textContent = value;
   }
 
-  // Mã đơn của backend rất dài: ORD-20261108-<uuid>. Rút gọn để hiển thị.
   function shortCode(order) {
     const code = String(order.code || '');
     const match = code.match(/^(ORD-\d{8})-([0-9a-f-]{36})$/i);
-
     if (match) return `${match[1]}-${match[2].slice(0, 6).toUpperCase()}`;
     if (code) return code;
-
     return `#${String(order.id || '').slice(0, 8).toUpperCase()}`;
   }
 
@@ -139,10 +161,8 @@
     if (status !== ORDER_STATUS.PENDING && status !== ORDER_STATUS.PREPARING) {
       return false;
     }
-
     const created = new Date(order.createdAt).getTime();
     if (Number.isNaN(created)) return false;
-
     return Date.now() - created > LATE_MINUTES * 60 * 1000;
   }
 
@@ -159,12 +179,9 @@
     `;
   }
 
-  /* =====================================================
-     GỌI API
-     ===================================================== */
+  /* ===================== API ===================== */
   async function loadOrders({ silent = false } = {}) {
     const seq = ++state.loadSeq;
-
     if (!silent) setLoading(true);
 
     try {
@@ -179,8 +196,6 @@
       if (state.search) params.set('search', state.search);
 
       const result = await api.get(`${API_ORDERS}?${params.toString()}`);
-
-      // Có request mới hơn đã được gửi -> bỏ kết quả cũ
       if (seq !== state.loadSeq) return;
 
       const list = Array.isArray(result) ? result : result?.data || [];
@@ -189,7 +204,6 @@
       const total = Number(meta.total ?? list.length) || 0;
       const totalPages = Math.max(1, Number(meta.totalPages) || 1);
 
-      // Trang hiện tại vượt quá số trang (vd: vừa hủy đơn cuối của trang)
       if (state.page > totalPages) {
         state.page = totalPages;
         return loadOrders({ silent });
@@ -204,10 +218,8 @@
       renderPagination();
     } catch (error) {
       if (seq !== state.loadSeq) return;
-
-      // Làm mới ngầm thất bại thì giữ nguyên giao diện hiện tại
       if (silent) {
-        console.warn('Làm mới tự động thất bại:', error.message);
+        console.warn('Tự làm mới thất bại:', error.message);
         return;
       }
 
@@ -215,7 +227,6 @@
       state.total = 0;
       state.totalPages = 1;
       state.error = error.message;
-
       renderOrders();
       renderPagination();
       ui.toast(`Không thể tải đơn hàng: ${error.message}`, 'error', 5000);
@@ -224,10 +235,8 @@
     }
   }
 
-  // Lấy số lượng đơn theo từng trạng thái bằng meta.total (limit=1)
   async function loadCounts() {
     const keys = ['ALL', ...STATUS_KEYS];
-
     const results = await Promise.allSettled(
       keys.map((key) => {
         const params = new URLSearchParams({ page: '1', limit: '1' });
@@ -238,12 +247,10 @@
 
     results.forEach((result, index) => {
       if (result.status !== 'fulfilled') return;
-
       const value = result.value;
       const total = Array.isArray(value)
         ? value.length
         : Number(value?.meta?.total ?? 0);
-
       state.counts[keys[index]] = total;
     });
 
@@ -254,18 +261,14 @@
     return Promise.all([loadOrders({ silent }), loadCounts()]);
   }
 
-  /* =====================================================
-     HIỂN THỊ
-     ===================================================== */
+  /* ===================== HIỂN THỊ ===================== */
   function setLoading(isLoading) {
     const loading = $('orderLoading');
     const grid = $('orderGrid');
     const refresh = $('refreshOrders');
 
-    // Chỉ hiện spinner lớn khi chưa có dữ liệu nào để xem
     if (loading) loading.hidden = !(isLoading && !state.orders.length);
     if (grid) grid.classList.toggle('is-loading', isLoading);
-
     if (refresh) {
       refresh.disabled = isLoading;
       refresh.classList.toggle('spinning', isLoading);
@@ -274,20 +277,16 @@
 
   function renderCounts() {
     const c = state.counts;
-
     setText('totalOrders', c.ALL);
     setText('pendingOrders', c.PENDING);
     setText('preparingOrders', c.PREPARING);
     setText('readyOrders', c.READY);
-
     setText('countAll', c.ALL);
     setText('countPending', c.PENDING);
     setText('countPreparing', c.PREPARING);
     setText('countReady', c.READY);
     setText('countServed', c.SERVED);
     setText('countCancelled', c.CANCELLED);
-
-    // Sidebar + chuông thông báo: số đơn đang chờ xác nhận
     setText('sidebarOrderCount', c.PENDING);
 
     const dot = $('notificationDot');
@@ -304,18 +303,15 @@
           <div class="empty-icon error"><i class="bi bi-wifi-off"></i></div>
           <h3>Không thể tải dữ liệu</h3>
           <p>${fmt.escapeHTML(state.error)}</p>
-          <button type="button" class="of-btn of-btn-primary retry-button"
-                  data-action="reload">
+          <button type="button" class="of-btn of-btn-primary retry-button" data-action="reload">
             <i class="bi bi-arrow-clockwise"></i> Thử lại
           </button>
-        </div>
-      `;
+        </div>`;
       return;
     }
 
     if (!state.orders.length) {
       const filtering = state.search || state.status !== 'ALL';
-
       grid.innerHTML = `
         <div class="empty-state">
           <div class="empty-icon"><i class="bi bi-receipt"></i></div>
@@ -327,8 +323,7 @@
                 : 'Đơn hàng mới sẽ được hiển thị tại đây ngay khi được tạo.'
             }
           </p>
-        </div>
-      `;
+        </div>`;
       return;
     }
 
@@ -354,6 +349,11 @@
           .map(
             (item) => `
               <div class="order-item-row">
+                <img class="order-item-thumb"
+                     src="${fmt.escapeHTML(getItemImage(item))}"
+                     alt="${fmt.escapeHTML(item.name || 'Món ăn')}"
+                     loading="lazy"
+                     onerror="this.src='${FALLBACK_IMAGE}'">
                 <span class="order-item-name">
                   ${fmt.escapeHTML(item.name || 'Món ăn')}
                   ${
@@ -369,10 +369,11 @@
               </div>`,
           )
           .join('')
-      : '<div class="order-item-row"><span class="order-item-name">Chưa có thông tin món</span></div>';
+      : `<div class="order-item-row">
+           <span class="order-item-name">Chưa có thông tin món</span>
+         </div>`;
 
     const actions = getActions(status);
-
     const actionButtons = actions
       .map(
         (action) => `
@@ -394,7 +395,7 @@
 
         <div class="order-card-header">
           <div>
-            <h3 class="order-number" title="${fmt.escapeHTML(order.code)}">
+            <h3 class="order-number" title="${fmt.escapeHTML(order.code || '')}">
               ${fmt.escapeHTML(shortCode(order))}
             </h3>
             <span class="order-time" title="${fmt.escapeHTML(fmt.dateTime(order.createdAt))}">
@@ -446,7 +447,6 @@
             <span class="order-total-label">Tổng tiền</span>
             <strong class="order-total">${fmt.escapeHTML(fmt.currency(order.totalAmount))}</strong>
           </div>
-
           <button type="button" class="btn-detail"
                   data-action="detail"
                   data-id="${fmt.escapeHTML(id)}">
@@ -455,14 +455,12 @@
         </div>
 
         ${actions.length ? `<div class="order-actions">${actionButtons}</div>` : ''}
-
       </article>
     `;
   }
 
   function renderPagination() {
     const { page, totalPages, total, orders } = state;
-
     setText('currentPage', page);
 
     if (!total) {
@@ -470,7 +468,6 @@
     } else {
       const from = (page - 1) * PAGE_LIMIT + 1;
       const to = from + orders.length - 1;
-
       setText(
         'paginationInfo',
         `Trang ${page}/${totalPages} · Hiển thị ${from}–${to} trên tổng ${total} đơn hàng`,
@@ -479,14 +476,11 @@
 
     const prev = $('prevPage');
     const next = $('nextPage');
-
     if (prev) prev.disabled = page <= 1;
     if (next) next.disabled = page >= totalPages;
   }
 
-  /* =====================================================
-     CẬP NHẬT TRẠNG THÁI
-     ===================================================== */
+  /* ===================== THAO TÁC ===================== */
   async function changeStatus(id, targetStatus) {
     if (state.busyIds.has(id)) return;
 
@@ -495,7 +489,6 @@
 
     const current = normalizeStatus(order.status);
     const target = normalizeStatus(targetStatus);
-
     const action = (STATUS_ACTIONS[current] || []).find((a) => a.to === target);
 
     if (!action) {
@@ -503,7 +496,6 @@
       return;
     }
 
-    // Chỉ hỏi xác nhận với thao tác không thể hoàn tác (hủy đơn)
     if (action.confirm) {
       const ok = await ui.confirmDialog({
         title: 'Hủy đơn hàng?',
@@ -514,7 +506,6 @@
         cancelText: 'Giữ lại',
         danger: true,
       });
-
       if (!ok) return;
     }
 
@@ -525,23 +516,16 @@
       await api.patch(`${API_ORDERS}/${encodeURIComponent(id)}/status`, {
         status: target,
       });
-
       ui.toast(action.success, 'success');
     } catch (error) {
-      // 400: sai State Machine (vd: đơn đã bị người khác đổi trạng thái)
       ui.toast(error.message, 'error', 5000);
     } finally {
       state.busyIds.delete(id);
       renderOrders();
-
-      // Tải lại để đồng bộ với trạng thái thật trên server
       await refreshAll({ silent: true });
     }
   }
 
-  /* =====================================================
-     CHI TIẾT ĐƠN HÀNG
-     ===================================================== */
   async function showOrderDetail(id) {
     const modal = ui.openModal({
       title: 'Chi tiết đơn hàng',
@@ -557,9 +541,7 @@
     try {
       const result = await api.get(`${API_ORDERS}/${encodeURIComponent(id)}`);
       const order = result?.data && !result.id ? result.data : result;
-
       if (!order) throw new Error('Không tìm thấy đơn hàng.');
-
       modal.body.innerHTML = renderOrderDetail(order);
     } catch (error) {
       modal.body.innerHTML = `
@@ -580,16 +562,24 @@
           .map((item) => {
             const price = Number(item.unitPrice) || 0;
             const quantity = Number(item.quantity) || 0;
-
             return `
               <tr>
                 <td>
-                  <strong>${fmt.escapeHTML(item.name || 'Món ăn')}</strong>
-                  ${
-                    item.note
-                      ? `<small class="order-item-note">${fmt.escapeHTML(item.note)}</small>`
-                      : ''
-                  }
+                  <div class="detail-item-cell">
+                    <img class="detail-item-thumb"
+                         src="${fmt.escapeHTML(getItemImage(item))}"
+                         alt="${fmt.escapeHTML(item.name || '')}"
+                         loading="lazy"
+                         onerror="this.src='${FALLBACK_IMAGE}'">
+                    <div>
+                      <strong>${fmt.escapeHTML(item.name || 'Món ăn')}</strong>
+                      ${
+                        item.note
+                          ? `<small class="order-item-note">${fmt.escapeHTML(item.note)}</small>`
+                          : ''
+                      }
+                    </div>
+                  </div>
                 </td>
                 <td class="text-center">${quantity}</td>
                 <td class="text-right">${fmt.escapeHTML(fmt.currency(price))}</td>
@@ -616,7 +606,6 @@
       }
 
       <h3 class="detail-title">Danh sách món ăn</h3>
-
       <div class="detail-table-wrapper">
         <table class="detail-table">
           <thead>
@@ -638,12 +627,9 @@
     `;
   }
 
-  /* =====================================================
-     BỘ LỌC, TÌM KIẾM, PHÂN TRANG
-     ===================================================== */
+  /* ===================== SỰ KIỆN ===================== */
   function selectStatus(status) {
     const next = status === 'ALL' ? 'ALL' : normalizeStatus(status);
-
     state.status = next;
     state.page = 1;
 
@@ -656,36 +642,39 @@
 
   function handleSearch(value) {
     clearTimeout(state.searchTimer);
-
     state.searchTimer = setTimeout(() => {
       const keyword = value.trim();
       if (keyword === state.search) return;
-
       state.search = keyword;
       state.page = 1;
       loadOrders();
     }, 400);
   }
 
-  /* =====================================================
-     SIDEBAR / HEADER / HỖ TRỢ
-     ===================================================== */
   function openSupport() {
     ui.openModal({
       title: 'Hỗ trợ',
       size: 'sm',
       html: `
         <ul class="support-list">
-          <li><i class="bi bi-telephone"></i><div><strong>Hotline</strong><span>1900 0000 (8:00 – 22:00)</span></div></li>
-          <li><i class="bi bi-envelope"></i><div><strong>Email</strong><span>support@orderflow.vn</span></div></li>
-          <li><i class="bi bi-chat-dots"></i><div><strong>Báo lỗi hệ thống</strong><span>Liên hệ quản trị viên của nhà hàng.</span></div></li>
+          <li>
+            <i class="bi bi-telephone"></i>
+            <div><strong>Hotline</strong><span>1900 0000 (8:00 – 22:00)</span></div>
+          </li>
+          <li>
+            <i class="bi bi-envelope"></i>
+            <div><strong>Email</strong><span>support@orderflow.vn</span></div>
+          </li>
+          <li>
+            <i class="bi bi-chat-dots"></i>
+            <div><strong>Báo lỗi hệ thống</strong><span>Liên hệ quản trị viên của nhà hàng.</span></div>
+          </li>
         </ul>
       `,
     });
   }
 
   function bindEvents() {
-    // Tìm kiếm
     const search = $('searchOrder');
     if (search) {
       search.addEventListener('input', (e) => handleSearch(e.target.value));
@@ -699,7 +688,6 @@
       });
     }
 
-    // Tab trạng thái
     const tabs = $('orderTabs');
     if (tabs) {
       tabs.addEventListener('click', (e) => {
@@ -708,11 +696,9 @@
       });
     }
 
-    // Làm mới thủ công
     const refresh = $('refreshOrders');
     if (refresh) refresh.addEventListener('click', () => refreshAll());
 
-    // Sắp xếp
     const sort = $('sortOrders');
     if (sort) {
       sort.addEventListener('change', (e) => {
@@ -724,7 +710,6 @@
       });
     }
 
-    // Phân trang
     const prev = $('prevPage');
     if (prev) {
       prev.addEventListener('click', () => {
@@ -745,30 +730,24 @@
       });
     }
 
-    // Các nút trong lưới đơn hàng (event delegation)
     const grid = $('orderGrid');
     if (grid) {
       grid.addEventListener('click', (e) => {
         const button = e.target.closest('[data-action]');
         if (!button || button.disabled) return;
-
         const { action, id, status } = button.dataset;
-
         if (action === 'detail' && id) showOrderDetail(id);
         if (action === 'change-status' && id) changeStatus(id, status);
         if (action === 'reload') refreshAll();
       });
     }
 
-    // Chuông thông báo -> lọc đơn đang chờ
     const bell = $('notificationButton');
     if (bell) bell.addEventListener('click', () => selectStatus('PENDING'));
 
-    // Hỗ trợ
     const support = $('supportButton');
     if (support) support.addEventListener('click', openSupport);
 
-    // Tự làm mới khi quay lại tab trình duyệt
     document.addEventListener('visibilitychange', () => {
       if (!document.hidden) refreshAll({ silent: true });
     });
@@ -776,16 +755,12 @@
 
   function startPolling() {
     clearInterval(state.pollTimer);
-
     state.pollTimer = setInterval(() => {
       if (document.hidden) return;
       refreshAll({ silent: true });
     }, POLL_INTERVAL);
   }
 
-  /* =====================================================
-     KHỞI TẠO
-     ===================================================== */
   function init() {
     setText(
       'currentDate',

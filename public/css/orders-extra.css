@@ -1,16 +1,14 @@
 /* =====================================================
-   ORDERFLOW - CSS BỔ SUNG CHO ORDER DASHBOARD
+   ORDERFLOW - CSS BỔ SUNG CHO BẢNG ĐIỀU KHIỂN ĐƠN HÀNG
    File: public/css/orders-extra.css
-   Nạp SAU dashboard.css (đã khai báo trong index.html).
-   Gồm: Order Card, nút thao tác, Modal, Toast, trạng thái lỗi.
-===================================================== */
+   ===================================================== */
 
 /* ---------- Chuông thông báo ---------- */
 .notification-dot[hidden] {
     display: none !important;
 }
 
-/* ---------- Nút Refresh quay khi đang tải ---------- */
+/* ---------- Nút Làm mới quay khi đang tải ---------- */
 .refresh-button.spinning i {
     animation: loading-spin 0.8s linear infinite;
 }
@@ -31,7 +29,7 @@
     margin-top: 14px;
 }
 
-/* ---------- Order Card ---------- */
+/* ---------- Thẻ đơn hàng ---------- */
 .order-card {
     display: flex;
     flex-direction: column;
@@ -94,17 +92,41 @@
     color: var(--text);
 }
 
+/* ---------- Món ăn + hình ảnh ---------- */
 .order-items {
     flex: 1;
 }
 
-.order-item-row {
+.order-items-title {
+    margin: 10px 0 8px;
     font-size: 11px;
+    font-weight: 700;
+    color: var(--text-secondary);
+}
+
+.order-item-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 6px 0;
+    font-size: 12px;
+}
+
+.order-item-thumb {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: #f0f3f1;
+    border: 1px solid var(--border);
 }
 
 .order-item-name {
+    flex: 1;
     min-width: 0;
     word-break: break-word;
+    line-height: 1.4;
 }
 
 .order-item-note {
@@ -115,10 +137,20 @@
     font-style: italic;
 }
 
+.order-item-quantity {
+    font-weight: 700;
+    color: var(--text);
+    white-space: nowrap;
+}
+
 .order-item-more {
-    padding: 0;
+    padding: 4px 0;
     border: none;
     background: none;
+    color: var(--primary);
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
 }
 
 .order-item-more:hover {
@@ -129,21 +161,36 @@
     display: flex;
     align-items: flex-start;
     gap: 6px;
-    margin-bottom: 12px;
+    margin: 8px 0 12px;
     padding: 8px 10px;
     border-radius: 8px;
     background: #fffaf0;
     color: #9a6b1c;
-    font-size: 10px;
+    font-size: 11px;
     line-height: 1.5;
 }
 
 .order-card-footer {
     margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+}
+
+.order-total-label {
+    display: block;
+    font-size: 10px;
+    color: var(--text-secondary);
+    margin-bottom: 2px;
 }
 
 .order-total {
     font-size: 16px;
+    font-weight: 800;
+    color: var(--primary-dark);
 }
 
 .btn-detail {
@@ -158,6 +205,7 @@
     color: #536159;
     font-size: 11px;
     font-weight: 700;
+    cursor: pointer;
     transition: 0.2s;
 }
 
@@ -166,8 +214,10 @@
     color: var(--primary);
 }
 
-/* Nút thao tác: to hơn để bấm nhanh trong bếp */
+/* Nút thao tác */
 .order-actions {
+    display: flex;
+    gap: 8px;
     margin-top: 12px;
 }
 
@@ -179,13 +229,28 @@
     gap: 6px;
     min-height: 34px;
     padding: 0 10px;
+    border-radius: 8px;
     font-size: 11px;
+    font-weight: 700;
     white-space: nowrap;
+    cursor: pointer;
     transition: 0.2s;
+}
+
+.order-actions .btn-primary {
+    background: var(--primary);
+    color: var(--white);
+    border: none;
 }
 
 .order-actions .btn-primary:hover:not(:disabled) {
     background: var(--primary-dark);
+}
+
+.order-actions .btn-danger {
+    background: transparent;
+    color: var(--red);
+    border: 1px solid #f3caca;
 }
 
 .order-actions .btn-danger:hover:not(:disabled) {
@@ -193,7 +258,7 @@
     color: var(--white);
 }
 
-/* ---------- Nút dùng chung (modal, dialog) ---------- */
+/* ---------- Nút dùng chung (modal) ---------- */
 .of-btn {
     display: inline-flex;
     align-items: center;
@@ -205,6 +270,7 @@
     border-radius: 9px;
     font-size: 12px;
     font-weight: 700;
+    cursor: pointer;
     transition: 0.2s;
 }
 
@@ -284,6 +350,7 @@ body.modal-open {
 }
 
 .of-modal-header h2 {
+    margin: 0;
     font-size: 15px;
     font-weight: 800;
 }
@@ -296,6 +363,7 @@ body.modal-open {
     background: transparent;
     color: var(--text-secondary);
     font-size: 14px;
+    cursor: pointer;
 }
 
 .of-modal-close:hover {
@@ -320,6 +388,7 @@ body.modal-open {
     color: #4b5a51;
     font-size: 13px;
     line-height: 1.7;
+    margin: 0;
 }
 
 @keyframes of-fade {
@@ -395,7 +464,7 @@ body.modal-open {
 .detail-table td {
     padding: 10px 12px;
     border-top: 1px solid var(--border);
-    vertical-align: top;
+    vertical-align: middle;
 }
 
 .detail-table .text-center,
@@ -406,6 +475,23 @@ body.modal-open {
 .detail-table .text-right,
 .detail-table th.text-right {
     text-align: right;
+}
+
+/* Ảnh trong modal chi tiết */
+.detail-item-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.detail-item-thumb {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: #f0f3f1;
+    border: 1px solid var(--border);
 }
 
 .detail-total {
@@ -430,6 +516,8 @@ body.modal-open {
     flex-direction: column;
     gap: 14px;
     list-style: none;
+    margin: 0;
+    padding: 0;
 }
 
 .support-list li {
@@ -530,5 +618,9 @@ body.modal-open {
 
     .detail-grid {
         grid-template-columns: minmax(0, 1fr);
+    }
+
+    .order-actions {
+        flex-direction: column;
     }
 }

@@ -202,6 +202,7 @@ export class OrdersService {
           unitPrice: Number(menuItem.price),
           quantity: item.quantity,
           note: item.note?.trim() || undefined,
+          imageUrl: menuItem.imageUrl || undefined,
         });
       });
 
