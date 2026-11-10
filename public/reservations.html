@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý đặt bàn | OrderFlow</title>
+    <link rel="stylesheet" href="/css/management.css">
+</head>
+<body>
+<div class="management-layout">
+    <aside class="sidebar">
+        <a class="brand" href="/">OrderFlow</a>
+        <p class="sidebar-heading">QUẢN LÝ NHÀ HÀNG</p>
+
+        <nav>
+            <a href="/">Tổng quan</a>
+            <a href="/#orderSection">Đơn hàng</a>
+            <a href="/tables.html">Quản lý bàn</a>
+            <a class="active" href="/reservations.html">Đặt bàn</a>
+            <a href="/menu.html">Thực đơn</a>
+            <a href="/inventory.html">Kho nguyên liệu</a>
+            <a href="/customers.html">Khách hàng</a>
+            <a href="/staff.html">Nhân viên</a>
+            <a href="/reports.html">Báo cáo</a>
+            <a href="/settings.html">Cài đặt</a>
+        </nav>
+
+        <button id="logoutButton" class="btn btn-logout">Đăng xuất</button>
+    </aside>
+
+    <main class="main-content">
+        <header class="page-header">
+            <div>
+                <h1>Quản lý đặt bàn</h1>
+                <p class="muted">Theo dõi lịch đặt bàn và thông tin khách hàng.</p>
+            </div>
+
+            <button id="addReservationButton" class="btn btn-primary">
+                + Tạo đặt bàn
+            </button>
+        </header>
+
+        <section class="stats-grid">
+            <article class="stat-card">
+                <span>Tổng số bàn</span>
+                <strong id="reservationTotalTables">0</strong>
+            </article>
+            <article class="stat-card">
+                <span>Đang đặt</span>
+                <strong id="reservationCount">0</strong>
+            </article>
+            <article class="stat-card">
+                <span>Bàn còn trống</span>
+                <strong id="reservationAvailable">0</strong>
+            </article>
+        </section>
+
+        <section class="content-card">
+            <div class="toolbar">
+                <input id="searchReservation" type="search"
+                       placeholder="Tìm tên khách, số bàn, số điện thoại...">
+                <button id="refreshReservations" class="btn btn-light">Làm mới</button>
+            </div>
+
+            <div id="reservationMessage" class="message"></div>
+
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Số bàn</th>
+                        <th>Khách hàng</th>
+                        <th>Số điện thoại</th>
+                        <th>Số khách</th>
+                        <th>Thời gian đặt</th>
+                        <th>Ghi chú</th>
+                        <th>Thao tác</th>
+                    </tr>
+                    </thead>
+                    <tbody id="reservationBody">
+                    <tr>
+                        <td colspan="7" class="empty-cell">Đang tải dữ liệu...</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+
+<script src="/js/management.js"></script>
+</body>
+</html>
