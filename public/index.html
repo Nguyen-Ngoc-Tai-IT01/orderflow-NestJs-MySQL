@@ -13,6 +13,9 @@
     <!-- Bootstrap Icons -->
     <link rel="stylesheet"
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+          
+    <!-- FontAwesome cho icon Master Data -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- CSS -->
     <link rel="stylesheet" href="/css/dashboard.css">
@@ -37,55 +40,55 @@
         <nav class="sidebar-nav">
             <p class="nav-heading">KHÔNG GIAN LÀM VIỆC</p>
 
-            <a href="/" class="nav-item active">
+            <a href="#orderSection" class="nav-item active" data-target="orderSection">
                 <i class="bi bi-grid-1x2"></i>
                 <span>Tổng quan</span>
             </a>
 
-            <a href="/#orderSection" class="nav-item">
+            <a href="#orderSection" class="nav-item" data-target="orderSection">
                 <i class="bi bi-receipt"></i>
                 <span>Đơn hàng</span>
                 <span class="nav-badge" id="sidebarOrderCount">0</span>
             </a>
 
-            <a href="/tables.html" class="nav-item">
+            <a href="#tablesSection" class="nav-item" data-target="tablesSection">
                 <i class="bi bi-grid"></i>
                 <span>Bàn ăn</span>
             </a>
 
-            <a href="/menu.html" class="nav-item">
+            <a href="#menuSection" class="nav-item" data-target="menuSection">
                 <i class="bi bi-cup-hot"></i>
                 <span>Thực đơn</span>
             </a>
 
-            <a href="/inventory.html" class="nav-item">
+            <a href="#inventorySection" class="nav-item" data-target="inventorySection">
                 <i class="bi bi-box-seam"></i>
                 <span>Kho hàng</span>
             </a>
 
-            <a href="/reservations.html" class="nav-item">
+            <a href="#reservationsSection" class="nav-item" data-target="reservationsSection">
                 <i class="bi bi-calendar-check"></i>
                 <span>Đặt bàn</span>
             </a>
 
-            <a href="/customers.html" class="nav-item">
+            <a href="#customersSection" class="nav-item" data-target="customersSection">
                 <i class="bi bi-people"></i>
                 <span>Khách hàng</span>
             </a>
 
-            <a href="/staff.html" class="nav-item">
+            <a href="#staffSection" class="nav-item" data-target="staffSection">
                 <i class="bi bi-person-badge"></i>
                 <span>Nhân viên</span>
             </a>
 
             <p class="nav-heading nav-heading-spaced">QUẢN LÝ</p>
 
-            <a href="/reports.html" class="nav-item">
+            <a href="#reportsSection" class="nav-item" data-target="reportsSection">
                 <i class="bi bi-bar-chart-line"></i>
                 <span>Báo cáo</span>
             </a>
 
-            <a href="/settings.html" class="nav-item">
+            <a href="#settingsSection" class="nav-item" data-target="settingsSection">
                 <i class="bi bi-gear"></i>
                 <span>Cài đặt</span>
             </a>
@@ -119,8 +122,8 @@
         <!-- HEADER -->
         <header class="top-header">
             <div class="page-heading">
-                <h1>Bảng điều khiển đơn hàng</h1>
-                <p>Theo dõi và quản lý đơn hàng nhà hàng.</p>
+                <h1 id="pageTitleText">Bảng điều khiển đơn hàng</h1>
+                <p id="pageDescText">Theo dõi và quản lý đơn hàng nhà hàng.</p>
             </div>
 
             <div class="header-right">
@@ -149,11 +152,11 @@
             </div>
         </header>
 
-        <!-- ================= DASHBOARD ================= -->
+        <!-- ================= DASHBOARD & CÁC SECTION QUẢN LÝ ================= -->
         <div class="dashboard-content">
 
-            <!-- Thống kê -->
-            <section class="statistics-grid">
+            <!-- Thống kê chung -->
+            <section class="statistics-grid" id="statsGrid">
                 <article class="stat-card">
                     <div class="stat-card-header">
                         <span>Tổng đơn hàng</span>
@@ -199,9 +202,8 @@
                 </article>
             </section>
 
-            <!-- ================= QUẢN LÝ ĐƠN HÀNG ================= -->
-            <section class="orders-section" id="orderSection">
-
+            <!-- ================= 1. QUẢN LÝ ĐƠN HÀNG (ORDER SECTION) ================= -->
+            <section class="orders-section content-section-view" id="orderSection">
                 <div class="section-header">
                     <div>
                         <h2>Quản lý đơn hàng</h2>
@@ -272,6 +274,140 @@
                     </div>
                 </div>
             </section>
+
+            <!-- ================= 2. QUẢN LÝ BÀN ĂN (TABLES SECTION) ================= -->
+            <section class="orders-section content-section-view" id="tablesSection" style="display: none;">
+                <div class="section-header">
+                    <div>
+                        <h2>Quản lý Bàn ăn</h2>
+                        <p>Thêm, sửa, xóa và theo dõi trạng thái bàn ăn trong nhà hàng.</p>
+                    </div>
+                    <button type="button" class="refresh-button" onclick="openTableModal()">
+                        <i class="fa-solid fa-plus"></i> Thêm bàn mới
+                    </button>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden" style="background:#fff; border-radius:12px; padding:20px; margin-top:20px;">
+                    <table style="width:100%; border-collapse:collapse;">
+                        <thead>
+                            <tr style="background:#f9fafb; text-align:left; border-bottom:1px solid #e5e7eb;">
+                                <th style="padding:12px;">ID</th>
+                                <th style="padding:12px;">Số bàn / Tên bàn</th>
+                                <th style="padding:12px;">Sức chứa</th>
+                                <th style="padding:12px;">Trạng thái</th>
+                                <th style="padding:12px; text-align:right;">Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablesTableBody">
+                            <tr><td colspan="5" style="padding:24px; text-align:center; color:#6b7280;">Đang tải danh sách bàn ăn...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ================= 3. QUẢN LÝ THỰC ĐƠN (MENU SECTION) ================= -->
+            <section class="orders-section content-section-view" id="menuSection" style="display: none;">
+                <div class="section-header">
+                    <div>
+                        <h2>Quản lý Thực đơn</h2>
+                        <p>Quản lý danh sách món ăn, giá cả và danh mục nhà hàng.</p>
+                    </div>
+                    <button type="button" class="refresh-button" onclick="openMenuModal()">
+                        <i class="fa-solid fa-plus"></i> Thêm món mới
+                    </button>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden" style="background:#fff; border-radius:12px; padding:20px; margin-top:20px;">
+                    <table style="width:100%; border-collapse:collapse;">
+                        <thead>
+                            <tr style="background:#f9fafb; text-align:left; border-bottom:1px solid #e5e7eb;">
+                                <th style="padding:12px;">Hình ảnh</th>
+                                <th style="padding:12px;">Tên món</th>
+                                <th style="padding:12px;">Danh mục</th>
+                                <th style="padding:12px;">Giá tiền</th>
+                                <th style="padding:12px;">Trạng thái</th>
+                                <th style="padding:12px; text-align:right;">Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody id="menuTableBody">
+                            <tr><td colspan="6" style="padding:24px; text-align:center; color:#6b7280;">Đang tải thực đơn...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ================= 4. QUẢN LÝ KHO HÀNG (INVENTORY SECTION) ================= -->
+            <section class="orders-section content-section-view" id="inventorySection" style="display: none;">
+                <div class="section-header">
+                    <div>
+                        <h2>Quản lý Kho nguyên liệu</h2>
+                        <p>Theo dõi số lượng tồn kho nguyên liệu trong nhà hàng.</p>
+                    </div>
+                    <button type="button" class="refresh-button" onclick="openInventoryModal()">
+                        <i class="fa-solid fa-plus"></i> Thêm nguyên liệu
+                    </button>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden" style="background:#fff; border-radius:12px; padding:20px; margin-top:20px;">
+                    <table style="width:100%; border-collapse:collapse;">
+                        <thead>
+                            <tr style="background:#f9fafb; text-align:left; border-bottom:1px solid #e5e7eb;">
+                                <th style="padding:12px;">Tên nguyên liệu</th>
+                                <th style="padding:12px;">Số lượng tồn</th>
+                                <th style="padding:12px;">Đơn vị tính</th>
+                                <th style="padding:12px; text-align:right;">Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventoryTableBody">
+                            <tr><td colspan="4" style="padding:24px; text-align:center; color:#6b7280;">Đang tải kho hàng...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ================= 5. QUẢN LÝ NHÂN VIÊN (STAFF SECTION) ================= -->
+            <section class="orders-section content-section-view" id="staffSection" style="display: none;">
+                <div class="section-header">
+                    <div>
+                        <h2>Quản lý Nhân viên</h2>
+                        <p>Danh sách nhân viên, tài khoản và phân quyền hệ thống.</p>
+                    </div>
+                    <button type="button" class="refresh-button" onclick="openStaffModal()">
+                        <i class="fa-solid fa-plus"></i> Thêm nhân viên
+                    </button>
+                </div>
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden" style="background:#fff; border-radius:12px; padding:20px; margin-top:20px;">
+                    <table style="width:100%; border-collapse:collapse;">
+                        <thead>
+                            <tr style="background:#f9fafb; text-align:left; border-bottom:1px solid #e5e7eb;">
+                                <th style="padding:12px;">Họ và tên</th>
+                                <th style="padding:12px;">Email / Tài khoản</th>
+                                <th style="padding:12px;">Vai trò (Role)</th>
+                                <th style="padding:12px; text-align:right;">Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody id="staffTableBody">
+                            <tr><td colspan="4" style="padding:24px; text-align:center; color:#6b7280;">Đang tải danh sách nhân viên...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Các section phụ khác nếu bấm vào -->
+            <section class="orders-section content-section-view" id="reservationsSection" style="display: none;">
+                <div class="section-header"><h2>Quản lý Đặt bàn</h2></div>
+                <p style="padding:20px; color:#6b7280;">Chức năng đặt bàn đang được phát triển.</p>
+            </section>
+            <section class="orders-section content-section-view" id="customersSection" style="display: none;">
+                <div class="section-header"><h2>Quản lý Khách hàng</h2></div>
+                <p style="padding:20px; color:#6b7280;">Chức năng khách hàng đang được phát triển.</p>
+            </section>
+            <section class="orders-section content-section-view" id="reportsSection" style="display: none;">
+                <div class="section-header"><h2>Báo cáo doanh thu</h2></div>
+                <p style="padding:20px; color:#6b7280;">Khu vực biểu đồ thống kê.</p>
+            </section>
+            <section class="orders-section content-section-view" id="settingsSection" style="display: none;">
+                <div class="section-header"><h2>Cài đặt hệ thống</h2></div>
+                <p style="padding:20px; color:#6b7280;">Tùy chỉnh thông tin nhà hàng.</p>
+            </section>
+
         </div>
 
         <footer class="footer">
