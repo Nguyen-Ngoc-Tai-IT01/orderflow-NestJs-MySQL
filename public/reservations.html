@@ -3,91 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản lý đặt bàn | OrderFlow</title>
-    <link rel="stylesheet" href="/css/management.css">
+    <title>OrderFlow | Quản lý đặt bàn</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/css/orders-extra.css">
+    <link rel="stylesheet" href="/css/pages.css">
 </head>
-<body>
-<div class="management-layout">
-    <aside class="sidebar">
-        <a class="brand" href="/">OrderFlow</a>
-        <p class="sidebar-heading">QUẢN LÝ NHÀ HÀNG</p>
 
-        <nav>
-            <a href="/">Tổng quan</a>
-            <a href="/#orderSection">Đơn hàng</a>
-            <a href="/tables.html">Quản lý bàn</a>
-            <a class="active" href="/reservations.html">Đặt bàn</a>
-            <a href="/menu.html">Thực đơn</a>
-            <a href="/inventory.html">Kho nguyên liệu</a>
-            <a href="/customers.html">Khách hàng</a>
-            <a href="/staff.html">Nhân viên</a>
-            <a href="/reports.html">Báo cáo</a>
-            <a href="/settings.html">Cài đặt</a>
-        </nav>
+<body data-page="reservations"
+      data-title="Quản lý đặt bàn"
+      data-subtitle="Theo dõi khách đặt trước và nhận khách đúng giờ."
+      data-search-placeholder="Tìm tên khách, SĐT, số bàn...">
 
-        <button id="logoutButton" class="btn btn-logout">Đăng xuất</button>
-    </aside>
-
+<div class="app-container">
+    <!-- Sidebar + Header được /js/pages-common.js dựng tự động -->
     <main class="main-content">
-        <header class="page-header">
-            <div>
-                <h1>Quản lý đặt bàn</h1>
-                <p class="muted">Theo dõi lịch đặt bàn và thông tin khách hàng.</p>
-            </div>
 
-            <button id="addReservationButton" class="btn btn-primary">
-                + Tạo đặt bàn
-            </button>
-        </header>
+        <div id="shellHeader"></div>
 
-        <section class="stats-grid">
-            <article class="stat-card">
-                <span>Tổng số bàn</span>
-                <strong id="reservationTotalTables">0</strong>
-            </article>
-            <article class="stat-card">
-                <span>Đang đặt</span>
-                <strong id="reservationCount">0</strong>
-            </article>
-            <article class="stat-card">
-                <span>Bàn còn trống</span>
-                <strong id="reservationAvailable">0</strong>
-            </article>
-        </section>
+        <div class="dashboard-content">
+            <section class="statistics-grid">
+                <article class="stat-card">
+                    <div class="stat-card-header">
+                        <span>Tổng đặt bàn</span>
+                        <div class="stat-icon purple"><i class="bi bi-calendar-check"></i></div>
+                    </div>
+                    <h2 id="statTotal">0</h2>
+                    <p>Bàn đang được giữ chỗ</p>
+                </article>
+                <article class="stat-card">
+                    <div class="stat-card-header">
+                        <span>Hôm nay</span>
+                        <div class="stat-icon green"><i class="bi bi-calendar-day"></i></div>
+                    </div>
+                    <h2 id="statToday">0</h2>
+                    <p>Khách đến trong hôm nay</p>
+                </article>
+                <article class="stat-card">
+                    <div class="stat-card-header">
+                        <span>Sắp đến (2 giờ)</span>
+                        <div class="stat-icon orange"><i class="bi bi-alarm"></i></div>
+                    </div>
+                    <h2 id="statSoon">0</h2>
+                    <p>Cần chuẩn bị bàn</p>
+                </article>
+                <article class="stat-card">
+                    <div class="stat-card-header">
+                        <span>Quá giờ</span>
+                        <div class="stat-icon blue"><i class="bi bi-exclamation-circle"></i></div>
+                    </div>
+                    <h2 id="statOverdue">0</h2>
+                    <p>Khách chưa đến sau giờ hẹn</p>
+                </article>
+            </section>
 
-        <section class="content-card">
-            <div class="toolbar">
-                <input id="searchReservation" type="search"
-                       placeholder="Tìm tên khách, số bàn, số điện thoại...">
-                <button id="refreshReservations" class="btn btn-light">Làm mới</button>
-            </div>
+            <section class="orders-section">
+                <div class="section-header">
+                    <div>
+                        <h2>Danh sách đặt bàn</h2>
+                        <p>Chỉ hiển thị các bàn đang ở trạng thái "Đã đặt".</p>
+                    </div>
+                    <div class="pg-actions-bar">
+                        <button type="button" class="refresh-button" id="refreshButton">
+                            <i class="bi bi-arrow-clockwise"></i> Làm mới
+                        </button>
+                        <button type="button" class="of-btn of-btn-primary" id="addReservation"><i class="bi bi-plus-lg"></i> Đặt bàn mới</button>
+                    </div>
+                </div>
 
-            <div id="reservationMessage" class="message"></div>
+                <div class="order-toolbar">
+                    <div class="order-tabs" id="pageTabs">
+                        <button type="button" class="tab-button active" data-tab="ALL">Tất cả <span id="countAll">0</span></button>
+                        <button type="button" class="tab-button" data-tab="TODAY">Hôm nay <span id="countToday">0</span></button>
+                        <button type="button" class="tab-button" data-tab="UPCOMING">Sắp tới <span id="countUpcoming">0</span></button>
+                        <button type="button" class="tab-button" data-tab="OVERDUE">Quá giờ <span id="countOverdue">0</span></button>
+                    </div>
+                </div>
 
-            <div class="table-responsive">
-                <table>
-                    <thead>
-                    <tr>
-                        <th>Số bàn</th>
-                        <th>Khách hàng</th>
-                        <th>Số điện thoại</th>
-                        <th>Số khách</th>
-                        <th>Thời gian đặt</th>
-                        <th>Ghi chú</th>
-                        <th>Thao tác</th>
-                    </tr>
-                    </thead>
-                    <tbody id="reservationBody">
-                    <tr>
-                        <td colspan="7" class="empty-cell">Đang tải dữ liệu...</td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
+                <div id="pageLoading" class="loading-state" hidden>
+                    <div class="loading-spinner"></div>
+                    <p>Đang tải dữ liệu...</p>
+                </div>
+
+                <div class="pg-table-wrap">
+                    <table class="pg-table">
+                        <thead>
+                            <tr>
+                                <th>Thời gian</th>
+                                <th>Khách hàng</th>
+                                <th>Bàn</th>
+                                <th>Số khách</th>
+                                <th>Ghi chú</th>
+                                <th>Trạng thái</th>
+                                <th class="num">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reservationBody"></tbody>
+                    </table>
+                </div>
+                <p class="pg-table-footer" id="tableFooter"></p>
+            </section>
+        </div>
+
+        <footer class="footer">
+            <span>© 2026 OrderFlow.</span>
+            <span>Hệ thống quản lý nhà hàng</span>
+        </footer>
     </main>
 </div>
 
-<script src="/js/management.js"></script>
+<!-- Thứ tự quan trọng -->
+<script src="/js/common.js"></script>
+<script src="/js/pages-common.js"></script>
+<script src="/js/reservations.js"></script>
 </body>
 </html>

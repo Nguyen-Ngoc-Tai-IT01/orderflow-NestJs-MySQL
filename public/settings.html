@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OrderFlow | Cài đặt</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/css/orders-extra.css">
+    <link rel="stylesheet" href="/css/pages.css">
+</head>
+
+<body data-page="settings"
+      data-title="Cài đặt"
+      data-subtitle="Tùy chỉnh bảng điều khiển và kiểm tra kết nối hệ thống."
+      data-search-placeholder=""
+      data-search="off">
+
+<div class="app-container">
+    <!-- Sidebar + Header được /js/pages-common.js dựng tự động -->
+    <main class="main-content">
+
+        <div id="shellHeader"></div>
+
+        <div class="dashboard-content">
+            <div class="pg-settings-grid">
+
+                <section class="pg-settings-card">
+                    <h3><i class="bi bi-speedometer2"></i> Bảng điều khiển đơn hàng</h3>
+                    <p>Áp dụng cho trang Tổng quan. Lưu trên trình duyệt này.</p>
+                    <form id="dashboardForm" class="pg-form" novalidate>
+                        <label class="pg-field">
+                            <span>Số đơn hiển thị mỗi trang</span>
+                            <select class="pg-select" name="orderPageSize">
+                                <option value="6">6 đơn</option>
+                                <option value="9">9 đơn</option>
+                                <option value="12">12 đơn</option>
+                                <option value="18">18 đơn</option>
+                                <option value="24">24 đơn</option>
+                            </select>
+                        </label>
+                        <label class="pg-field">
+                            <span>Tự làm mới sau (giây)</span>
+                            <input class="pg-input" type="number" name="pollSeconds" min="5" max="300" step="1">
+                            <small>Từ 5 đến 300 giây.</small>
+                        </label>
+                        <label class="pg-field">
+                            <span>Cảnh báo đơn chờ quá (phút)</span>
+                            <input class="pg-input" type="number" name="lateMinutes" min="1" max="240" step="1">
+                            <small>Đơn Chờ xác nhận / Đang chế biến quá thời gian này sẽ viền đỏ.</small>
+                        </label>
+                        <div class="pg-form-error" data-error hidden></div>
+                        <div class="pg-settings-actions">
+                            <button type="submit" class="of-btn of-btn-primary">Lưu cài đặt</button>
+                        </div>
+                    </form>
+                </section>
+
+                <section class="pg-settings-card">
+                    <h3><i class="bi bi-calendar-check"></i> Đặt bàn & thông tin nhà hàng</h3>
+                    <p>Thông tin hiển thị ở cửa sổ Hỗ trợ và tên thương hiệu trên thanh bên.</p>
+                    <form id="restaurantForm" class="pg-form" novalidate>
+                        <label class="pg-field">
+                            <span>Giữ bàn tối đa sau giờ hẹn (phút)</span>
+                            <input class="pg-input" type="number" name="reservationHoldMinutes" min="0" max="180" step="1">
+                            <small>Quá thời gian này khách chưa đến sẽ bị tính là "Quá giờ".</small>
+                        </label>
+                        <label class="pg-field">
+                            <span>Tên nhà hàng</span>
+                            <input class="pg-input" name="restaurantName" maxlength="40">
+                        </label>
+                        <div class="pg-form-grid">
+                            <label class="pg-field">
+                                <span>Hotline</span>
+                                <input class="pg-input" name="hotline" maxlength="30">
+                            </label>
+                            <label class="pg-field">
+                                <span>Giờ làm việc</span>
+                                <input class="pg-input" name="openHours" maxlength="30">
+                            </label>
+                        </div>
+                        <label class="pg-field">
+                            <span>Email hỗ trợ</span>
+                            <input class="pg-input" type="email" name="email" maxlength="80">
+                        </label>
+                        <div class="pg-form-error" data-error hidden></div>
+                        <div class="pg-settings-actions">
+                            <button type="submit" class="of-btn of-btn-primary">Lưu thông tin</button>
+                        </div>
+                    </form>
+                </section>
+
+                <section class="pg-settings-card wide">
+                    <h3><i class="bi bi-hdd-network"></i> Kiểm tra kết nối API</h3>
+                    <p>Gọi thử các API chính của backend. Dòng báo "yêu cầu đăng nhập" nghĩa là controller đó còn gắn JwtAuthGuard.</p>
+                    <div class="pg-table-wrap">
+                        <table class="pg-table">
+                            <thead>
+                                <tr>
+                                    <th>Chức năng</th>
+                                    <th>Endpoint</th>
+                                    <th>Kết quả</th>
+                                    <th class="num">Thời gian</th>
+                                </tr>
+                            </thead>
+                            <tbody id="checkBody"></tbody>
+                        </table>
+                    </div>
+                    <div class="pg-settings-actions">
+                        <button type="button" class="of-btn of-btn-ghost" id="resetSettings">
+                            <i class="bi bi-arrow-counterclockwise"></i> Khôi phục mặc định
+                        </button>
+                        <button type="button" class="of-btn of-btn-primary" id="runCheck">
+                            <i class="bi bi-play-fill"></i> Kiểm tra ngay
+                        </button>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+
+        <footer class="footer">
+            <span>© 2026 OrderFlow.</span>
+            <span>Hệ thống quản lý nhà hàng</span>
+        </footer>
+    </main>
+</div>
+
+<!-- Thứ tự quan trọng -->
+<script src="/js/common.js"></script>
+<script src="/js/pages-common.js"></script>
+<script src="/js/settings.js"></script>
+</body>
+</html>
