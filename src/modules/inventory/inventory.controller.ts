@@ -8,7 +8,9 @@ import {
   Patch,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { InventoryService } from './inventory.service';
 import { CreateInventoryDto } from './dto/create-inventory.dto';
 import { CreateInventoryTransactionDto } from './dto/create-inventory-transaction.dto';
@@ -16,6 +18,7 @@ import { SetMenuIngredientDto } from './dto/set-menu-ingredient.dto';
 import { UpdateInventoryDto } from './dto/update-inventory.dto';
 
 @Controller('inventory')
+@UseGuards(JwtAuthGuard)
 export class InventoryController {
   constructor(private readonly inventoryService: InventoryService) {}
 

@@ -121,12 +121,8 @@
                 throw new Error('Máy chủ không trả về mã xác thực.');
             }
 
-            // Lưu JWT để gọi các API cần đăng nhập
-            localStorage.setItem('access_token', result.access_token);
-
-            // Tương thích với những đoạn code cũ đang đọc các tên token khác
-            localStorage.setItem('accessToken', result.access_token);
-            localStorage.setItem('token', result.access_token);
+            // Dùng cùng khóa với common.js và management.js.
+            localStorage.setItem('orderflow_token', result.access_token);
 
             // Ghi nhớ hoặc xóa tên đăng nhập
             if (rememberCheckbox.checked) {
