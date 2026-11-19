@@ -313,15 +313,24 @@
     setText('pageTitleText', info.title);
     setText('pageDescText', info.desc);
 
+    const hasExplicitRoute = Boolean(window.location.hash);
+
     document.querySelectorAll('.sidebar-nav .nav-item').forEach((item) => {
       const href = item.getAttribute('href');
 
       item.classList.toggle(
         'active',
         href === `#${targetId}` ||
-        (targetId === 'orderSection' && href === '/')
+        href === `/#${targetId}` ||
+        (targetId === 'orderSection' && !hasExplicitRoute && href === '/')
       );
     });
+
+    if (hasExplicitRoute && activeSec) {
+      requestAnimationFrame(() =>
+        activeSec.scrollIntoView({ behavior: 'smooth', block: 'start' }),
+      );
+    }
 
     if (targetId === 'orderSection') {
       loadOrders();

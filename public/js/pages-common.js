@@ -24,7 +24,7 @@
   const h = fmt.escapeHTML;
 
   /* =====================================================
-     1. GỌI API (không dùng đăng nhập)
+     1. GỌI API
      ===================================================== */
   class HttpError extends Error {
     constructor(message, status, data) {
@@ -54,6 +54,9 @@
 
   async function request(url, { method = 'GET', body, query } = {}) {
     const headers = { Accept: 'application/json' };
+    const token = OF.auth.getToken();
+    if (token) headers.Authorization = `Bearer ${token}`;
+
     let payload;
 
     if (typeof FormData !== 'undefined' && body instanceof FormData) {
@@ -92,9 +95,8 @@
       if (Array.isArray(message)) message = message.join('. ');
 
       if (response.status === 401) {
-        message =
-          'API này đang yêu cầu đăng nhập (JwtAuthGuard). ' +
-          'Hãy gỡ @UseGuards(JwtAuthGuard) ở controller tương ứng khi chạy môi trường phát triển.';
+        message = 'Phiên đăng nhập hết hạn hoặc không hợp lệ. Vui lòng đăng nhập lại.';
+        OF.auth.redirectToLogin();
       } else if (response.status === 403) {
         message = 'Bạn không có quyền thực hiện thao tác này.';
       } else if (
